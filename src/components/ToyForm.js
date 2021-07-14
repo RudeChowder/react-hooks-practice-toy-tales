@@ -21,19 +21,8 @@ function ToyForm({ toysURL, onToyFormSubmit }) {
         likes: 0
       }
 
-      const configObj = {
-        method: "POST",
-        headers:{
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(newToy)
-      }
-
-      fetch(toysURL, configObj)
-        .then(resp => resp.json())
-        .then(data => {
-          onToyFormSubmit(data)
-          alert(`${data.name} was added!`)
+      onToyFormSubmit(newToy)
+        .then(() => {
           setFormData({
             name:"",
             image:""

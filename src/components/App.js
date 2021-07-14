@@ -7,10 +7,10 @@ import ToyContainer from "./ToyContainer";
 function App() {
   const [showForm, setShowForm] = useState(false);
   const [toys, setToys] = useState([])
-  const toysUrl = "http://localhost:3001/toys"
+  const toysURL = "http://localhost:3001/toys"
 
   useEffect(() => {
-    fetch(toysUrl)
+    fetch(toysURL)
       .then(resp => resp.json())
       .then(data => {
         setToys(data)
@@ -22,13 +22,33 @@ function App() {
   }
 
   const handleToyFormSubmit = (newToy) => {
-    setToys([...toys, newToy])
+    return new Promise((resolve, reject) => {
+      const configObj = {
+        method: "POST",
+        headers:{
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(newToy)
+      }
+
+      fetch(toysURL, configObj)
+      .then(resp => resp.json())
+      .then(data => {
+        setToys([...toys, data])
+        alert(`${data.name} was added!`)
+        resolve("success")
+      })
+      .catch(() => {
+        alert("Something broke!")
+        reject("failed")
+      })
+    })
   }
 
   const handleDeleteToy = (id) => {
     const configObj = { method: "DELETE" }
 
-    fetch(`${toysUrl}/${id}`, configObj)
+    fetch(`${toysURL}/${id}`, configObj)
 
     const updatedToys = toys.filter(toy => toy.id !== id)
     setToys(updatedToys)
@@ -45,7 +65,7 @@ function App() {
       })
     }
 
-    fetch(`${toysUrl}/${id}`, configObj)
+    fetch(`${toysURL}/${id}`, configObj)
       .then(resp => resp.json())
       .then(data => {
         const updatedToys = toys.map(toy => {
@@ -55,7 +75,7 @@ function App() {
             return toy
           }
         })
-        
+
         setToys(updatedToys)
       })
   }
@@ -63,7 +83,7 @@ function App() {
   return (
     <>
       <Header />
-      {showForm ? <ToyForm toysURL={toysUrl} onToyFormSubmit={handleToyFormSubmit}/> : null}
+      {showForm ? <ToyForm toysURL={toysURL} onToyFormSubmit={handleToyFormSubmit}/> : null}
       <div className="buttonContainer">
         <button onClick={handleClick}>Add a Toy</button>
       </div>
